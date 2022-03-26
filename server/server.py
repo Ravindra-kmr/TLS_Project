@@ -14,7 +14,7 @@ import base64
 import time
 from datetime import date
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -127,7 +127,8 @@ def Server(myname, serverport):
 			if code == 601:
 				print(f"From {addr}: Received 601 request.")
 				clientname = base64.b64decode(recdata[1])
-				clientcertificatewithhash = base64.b64decode(recdata[2])
+				clientrandom = base64.b64decode(recdata[2])
+				clientcertificatewithhash = base64.b64decode(recdata[3])
 				clientcertificatewithhash = clientcertificatewithhash.decode("ascii").split('|')
 				clientcertificate =  clientcertificatewithhash[0].encode("ascii")
 				signature = base64.b64decode(clientcertificatewithhash[-1])
@@ -144,13 +145,16 @@ def Server(myname, serverport):
 					print("Client's Certificate expired.")
 					sys.exit(3)
 				print("Client's Certificate valid.")
+
 				clientpubkey = ((clientcertificate.decode("ascii")).split("-----"))[1:4]	
 				clientpubkey = "-----"+"-----".join(clientpubkey)+"-----"		#MAKE IT GLOBAL
 				# print(clientpubkey)
 				certificatefile = open("Certificate.dat","rb")
 				certificate = certificatefile.read()
 				certificatefile.close()
-				datatosend = "602".encode("ascii") +"|".encode("ascii") + base64.b64encode(myname.encode("ascii"))+"|".encode("ascii") + base64.b64encode(certificate)
+				serverrandom = os.urandom(32)
+				print("Generated serverrandom key.")
+				datatosend = "602".encode("ascii") +"|".encode("ascii") + base64.b64encode(myname.encode("ascii")) + '|'.encode("ascii") + base64.b64encode(serverrandom) +"|".encode("ascii") + base64.b64encode(certificate)
 				print("Sent certificate to receiver.")
 				conn.send(datatosend)
 
@@ -163,7 +167,34 @@ def Server(myname, serverport):
 				requestedFilename = base64.b64decode(recdata[-1]) 
 				PreMasterKey = RSAmyprivkey.decrypt(EncPreMasterKey,padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()),algorithm=hashes.SHA256(),label=None))
 				print("Decrypted the PreMasterKey.")
-				
+
+			# Generating all keys using PRF Function given in textbook.
+			secret_key = PRF_Fun(PreMasterKey,"master secret",clientrandom+serverrandom)[:48]
+			key_block = PRF_Fun(secret_key,"key expansion",clientrandom+serverrandom)
+			client_write_MAC_key = key_block[:32]
+			server_write_MAC_key = key_block[32:64]
+			client_write_key = key_block[64:88]
+			server_write_key = key_block[88:112]
+			client_write_IV = key_block[112:128]
+			server_write_IV = key_block[128:144]
+			print(key_block,len(key_block))
+
+
+
+			
+# PRF_Fun as described in textbook. 			
+def PRF_Fun(secret_key,label,seed1):
+	seed = label.encode()+seed1;
+	prf_res = b''
+	for i in range(5):	#32(HMAC-sha-256)+32+24(aes-192)+24+16(IV)+16 =144B
+		h = hmac.HMAC(secret_key, hashes.SHA256());
+		h.update(seed)
+		s1 = h.finalize()
+		h = hmac.HMAC(secret_key, hashes.SHA256());
+		h.update(s1+seed)
+		prf_res = prf_res + h.finalize()
+		seed = s1
+	return prf_res
 
 if __name__ == "__main__":
 	start()

@@ -14,7 +14,7 @@ import base64
 import time
 from datetime import date
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -112,7 +112,9 @@ def Client(myname, serverip,serverport):
 		certificatefile = open("Certificate.dat","rb")
 		certificate = certificatefile.read()
 		certificatefile.close()
-		datatosend = "601".encode("ascii") +"|".encode("ascii") + base64.b64encode(myname.encode("ascii")) + "|".encode("ascii") + base64.b64encode(certificate)
+		clientrandom = os.urandom(32)
+		print("Generated clientrandom key.")
+		datatosend = "601".encode("ascii") +"|".encode("ascii") + base64.b64encode(myname.encode("ascii")) + '|'.encode("ascii") + base64.b64encode(clientrandom) + "|".encode("ascii") + base64.b64encode(certificate)
 		skt.send(datatosend)
 		print(f'To {(serverip,serverport)}: Sent 601 request.')
 		recdata = skt.recv(2048)
@@ -122,7 +124,8 @@ def Client(myname, serverip,serverport):
 		if code == 602:
 			print(f'From {(serverip,serverport)}: Received 602 information.')
 			servername = base64.b64decode(recdata[1])
-			servercertificatewithhash = base64.b64decode(recdata[2])
+			serverrandom = base64.b64decode(recdata[2])
+			servercertificatewithhash = base64.b64decode(recdata[3])
 			servercertificatewithhash = servercertificatewithhash.decode("ascii").split('|')
 			servercertificate =  servercertificatewithhash[0].encode("ascii")
 			signature = base64.b64decode(servercertificatewithhash[-1])
@@ -153,7 +156,32 @@ def Client(myname, serverip,serverport):
 			skt.send(datatosend)
 			print(f'To {(serverip,serverport)}: Sent 603 request.')
 
+			# Generating all keys using PRF Function given in textbook.
+			secret_key = PRF_Fun(PreMasterKey,"master secret",clientrandom+serverrandom)[:48]
+			key_block = PRF_Fun(secret_key,"key expansion",clientrandom+serverrandom)
+			client_write_MAC_key = key_block[:32]
+			server_write_MAC_key = key_block[32:64]
+			client_write_key = key_block[64:88]
+			server_write_key = key_block[88:112]
+			client_write_IV = key_block[112:128]
+			server_write_IV = key_block[128:144]
+			print(key_block,len(key_block))
 
+
+			
+# PRF_Fun as described in textbook. 			
+def PRF_Fun(secret_key,label,seed1):
+	seed = label.encode()+seed1;
+	prf_res = b''
+	for i in range(5):	#32(HMAC-sha-256)+32+24(aes-192)+24+16(IV)+16 =144B
+		h = hmac.HMAC(secret_key, hashes.SHA256());
+		h.update(seed)
+		s1 = h.finalize()
+		h = hmac.HMAC(secret_key, hashes.SHA256());
+		h.update(s1+seed)
+		prf_res = prf_res + h.finalize()
+		seed = s1
+	return prf_res
 
 if __name__ == "__main__":
 	start()

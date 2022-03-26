@@ -1,24 +1,2 @@
 Opening Socket on given portnumber:60000 over all interfaces.
 Listening...
-
-*****************Connected to ('127.0.0.1', 47798)*****************
-To ('127.0.0.1', 47798): Server is listening...
-From ('127.0.0.1', 47798): Received 301 request.
-('127.0.0.1', 47798): Decrypted client's name: b'judeju'
-('127.0.0.1', 47798): Generated 8 byte nonce.
-('127.0.0.1', 47798): Certificate expire date is: 2023-03-26.
-('127.0.0.1', 47798): Generated client certificate.
-('127.0.0.1', 47798): Generated Hash of certificate and Signed the Hash using CA's private key.
-('127.0.0.1', 47798): Encrypted signed-hash using client's public key.
-To ('127.0.0.1', 47798): Sent 302 information.
-
-*****************Connected to ('127.0.0.1', 47800)*****************
-To ('127.0.0.1', 47800): Server is listening...
-From ('127.0.0.1', 47800): Received 301 request.
-('127.0.0.1', 47800): Decrypted client's name: b'ravind'
-('127.0.0.1', 47800): Generated 8 byte nonce.
-('127.0.0.1', 47800): Certificate expire date is: 2023-03-26.
-('127.0.0.1', 47800): Generated client certificate.
-('127.0.0.1', 47800): Generated Hash of certificate and Signed the Hash using CA's private key.
-('127.0.0.1', 47800): Encrypted signed-hash using client's public key.
-To ('127.0.0.1', 47800): Sent 302 information.
