@@ -6,18 +6,23 @@ Last Modified: 05-March-2022
 Bugs: None
 '''
 
+from asyncio import FastChildWatcher
 import os
+from pickle import bytes_types
+from pydoc import plain
 import sys
 import socket
 import getopt
 import base64
 import time
+import glob
 from datetime import date
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.ciphers.aead import AESCCM
 
 def start():
 	myname, mode, caport,caip, serverport = "","",60000, "", 60001
@@ -161,10 +166,11 @@ def Server(myname, serverport):
 			recdata = conn.recv(2048)
 			recdata = recdata.decode("ascii").split('|')
 			code = int(recdata[0])
+			
 			if code == 603:
 				print(f"From {addr}: Received 603 request.")
 				EncPreMasterKey =  base64.b64decode(recdata[1])
-				requestedFilename = base64.b64decode(recdata[-1]) 
+				# requestedFilename = base64.b64decode(recdata[-1]) 
 				PreMasterKey = RSAmyprivkey.decrypt(EncPreMasterKey,padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()),algorithm=hashes.SHA256(),label=None))
 				print("Decrypted the PreMasterKey.")
 
@@ -179,7 +185,61 @@ def Server(myname, serverport):
 			server_write_IV = key_block[128:144]
 			print(key_block,len(key_block))
 
+			recdata = conn.recv(2048)
+			print(f"Received: {recdata}")
+			recdata = recdata.decode("ascii").split('|')
+			code = int(recdata[0])
 
+			if code == 605:
+				request = recdata[-1]
+				requested_file = request.split(" ")[1]
+				print(f"Received 605 request for {requested_file}")
+
+				file_found = False
+				# Find html file
+				for file in os.listdir("html_files"):
+					if file == requested_file:
+						file_found = True
+						requested_file_path = os.path.join(os.getcwd(), "html_files", file)
+
+				# Prepare AES encryption object.
+				aesccm = AESCCM(server_write_key)
+				nonce = b'0000000'				
+				
+				# Prepare HMAC object.
+				h = hmac.HMAC(server_write_MAC_key, hashes.SHA256())
+				
+				content_type = b"d" # d for data
+				major_ver = b"3"
+				minor_ver = b"1"
+				
+				# Prepare response to client
+				if file_found:
+					with open(requested_file_path, 'r') as f:
+						while True:
+							chunk = f.read(2048).encode('ascii')
+							h_copy = h.copy()	
+							if chunk:
+								frag_size = (len(chunk)).to_bytes(2, byteorder='big')
+								tls_header = content_type + major_ver + minor_ver + frag_size
+								h_copy.update(chunk)
+								chunk_mac = h_copy.finalize()
+								ct = aesccm.encrypt(nonce, chunk + chunk_mac, None)
+								tls_header = content_type + major_ver + minor_ver + frag_size
+								tls_record = base64.b64encode(tls_header + ct)
+								conn.send(b"606|"+ tls_record)
+							else:
+								break
+				
+				else:
+					msg = b"Error: File Not Available"
+					frag_size = (len(msg)).to_bytes(2, byteorder='big')
+					h.update(msg)
+					msg_mac = h.finalize()
+					ct = aesccm.encrypt(nonce, msg + msg_mac, None)
+					tls_header = content_type + major_ver + minor_ver + frag_size
+					tls_record = base64.b64encode(tls_header + ct)
+					conn.send(b"608|"+ tls_record)
 
 			
 # PRF_Fun as described in textbook. 			

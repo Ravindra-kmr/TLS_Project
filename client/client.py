@@ -18,6 +18,8 @@ from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.ciphers.aead import AESCCM
+
 
 def start():
 	myname, mode, caport,caip, serverip, serverport= "","",60000, "", "", 60001
@@ -167,7 +169,61 @@ def Client(myname, serverip,serverport):
 			server_write_IV = key_block[128:144]
 			print(key_block,len(key_block))
 
+			datatosend = b"605" + b'|' + b'GET ' + b'1.html'
+			# print(datatosend)
+			print(f'Sent File Request')
+			skt.send(datatosend)
+			print(f'To {(serverip,serverport)}: Sent 605 request.')
+			with open("recvd_file.txt", 'w') as f:
+				f.write('')
 
+		recdata = skt.recv(2048)
+		print("Received data: ",recdata)
+		recdata = recdata.decode("ascii").split('|')
+		code = int(recdata[0])
+
+		if code == 606:
+			tls_record = base64.b64decode(recdata[1])
+			tls_header = tls_record[:5]
+			ct = tls_record[5:]
+			pt_length = int.from_bytes(tls_header[3:5], byteorder='big')
+			
+			aesccm = AESCCM(server_write_key)
+			nonce = b'0000000'				
+
+			
+			data = aesccm.decrypt(nonce, ct, None)
+			msg = data[:pt_length]
+			msg_mac = data[pt_length:]
+
+			h = hmac.HMAC(server_write_MAC_key, hashes.SHA256())
+			h.update(msg)
+
+			h.verify(msg_mac)
+			with open("recvd_file.txt", 'a+') as f:
+				f.write(msg.decode("ascii"))
+
+
+		
+		if code == 608:
+			tls_record = base64.b64decode(recdata[1])
+			tls_header = tls_record[:5]
+			ct = tls_record[5:]
+			pt_length = int.from_bytes(tls_header[3:5], byteorder='big')
+			
+			aesccm = AESCCM(server_write_key)
+			nonce = os.urandom(13)
+			
+			data = aesccm.decrypt(nonce, ct, None)
+			pt = data[:pt_length]
+			pt_mac = data[pt_length:]
+
+			h = hmac.HMAC(server_write_MAC_key, hashes.SHA256())
+			h.update(pt)
+
+			h.verify(pt_mac)
+
+			print(pt)
 			
 # PRF_Fun as described in textbook. 			
 def PRF_Fun(secret_key,label,seed1):
