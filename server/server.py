@@ -1,8 +1,8 @@
 #!/usr/bin/env python3.6
 '''
 Author: Ravindra kumar and Jude K Anil
-Function: Implement Client function which either asks or provides a requested file. 
-Last Modified: 05-March-2022
+Function: Implement Server function which provides a requested file. 
+Last Modified: 27-March-2022
 Bugs: None
 '''
 
