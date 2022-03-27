@@ -4,6 +4,8 @@ Comments about code:
     * Uncomment the requestCertifiate() function call line in client.py and server.py to request certificate from CA.
     * PRF is according to the textbook.
     * TLS Record is according to the textbook format.
+    * Received HTML file is stored in "recvd_file.html" inside the client folder.
+    * HTML files are stored inside server/html_files folder.
 
 1. Running the Server:  python3 server.py -n name -m S -q 10000
 2. Running the Client:  python3 client.py -n myname -m R -d 0.0.0.0 -q 10000

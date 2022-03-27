@@ -177,7 +177,7 @@ def Client(myname, serverip,serverport):
 			print(f'Sending File Request ...')
 			skt.send(datatosend)
 			print(f'Sent To {(serverip,serverport)}: 605 request.')
-			with open("recvd_file.txt", 'w') as f:
+			with open("recvd_file.html", 'w') as f:
 				f.write('')
 
 			is_receiving = False
@@ -222,7 +222,7 @@ def Client(myname, serverip,serverport):
 					h.update(msg)
 
 					h.verify(msg_mac)
-					with open("recvd_file.txt", 'a+') as f:
+					with open("recvd_file.html", 'a+') as f:
 						f.write(msg.decode("ascii"))
 
 
