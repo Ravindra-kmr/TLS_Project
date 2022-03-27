@@ -17,6 +17,8 @@ import base64
 import time
 import glob
 from datetime import date
+import threading
+
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -117,83 +119,107 @@ def Server(myname, serverport):
 	RSAmyprivkey = serialization.load_pem_private_key(myprivkeyfile.read(),password = None)	#recheck if needed.
 	# print(cryptography.__version__) # 37.0
 
+	current_threads = []
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as skt:
 		skt.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		skt.bind(('',serverport)) #open socket to listen on a port number over all interfaces. can use 0.0.0.0 also, same action.
-		skt.listen(5)
-		conn,addr = skt.accept()
-		with conn:
-			print(f"Connected to {addr}")
-			conn.sendall("Send file request...".encode())
-			recdata = conn.recv(2048)
-			recdata = recdata.decode("ascii").split('|')
-			code = int(recdata[0])
+		print("Listening ...")
+		while True:
+			skt.listen(5)
+			conn, addr = skt.accept()
+			print(f"Connected with: {addr}")
+			t = threading.Thread(target=handle_client, args=[conn, addr, mypubkey, RSAmyprivkey, RSAcapubkey, myname])
+			t.start()
+			current_threads.append(t)
 
-			if code == 601:
-				print(f"From {addr}: Received 601 request.")
-				clientname = base64.b64decode(recdata[1])
-				clientrandom = base64.b64decode(recdata[2])
-				clientcertificatewithhash = base64.b64decode(recdata[3])
-				clientcertificatewithhash = clientcertificatewithhash.decode("ascii").split('|')
-				clientcertificate =  clientcertificatewithhash[0].encode("ascii")
-				signature = base64.b64decode(clientcertificatewithhash[-1])
-				try:
-					RSAcapubkey.verify(signature,clientcertificate,padding.PSS(mgf=padding.MGF1(algorithm=hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH),hashes.SHA256())
-				except InvalidSignature as e:
-					print("Invalid Signature.")
-					sys.exit(3)
-				print("Signature matched.")
-				certExpdate= clientcertificate[-10::1].decode("ascii")
-				today = date.today()
-				certExpdate = date(int(certExpdate[:4]),int(certExpdate[5:7]),int(certExpdate[8:]))
-				if (certExpdate-today).days < 0:
-					print("Client's Certificate expired.")
-					sys.exit(3)
-				print("Client's Certificate valid.")
 
-				clientpubkey = ((clientcertificate.decode("ascii")).split("-----"))[1:4]	
-				clientpubkey = "-----"+"-----".join(clientpubkey)+"-----"		#MAKE IT GLOBAL
-				# print(clientpubkey)
-				certificatefile = open("Certificate.dat","rb")
-				certificate = certificatefile.read()
-				certificatefile.close()
-				serverrandom = os.urandom(32)
-				print("Generated serverrandom key.")
-				datatosend = "602".encode("ascii") +"|".encode("ascii") + base64.b64encode(myname.encode("ascii")) + '|'.encode("ascii") + base64.b64encode(serverrandom) +"|".encode("ascii") + base64.b64encode(certificate)
-				print("Sent certificate to receiver.")
-				conn.send(datatosend)
+def handle_client(conn, addr, mypubkey, RSAmyprivkey, RSAcapubkey, myname):
+	
+	with conn:
+		print(f"Connected to {addr}")
+		recdata = conn.recv(2048)
+		if not recdata:
+			print("Received empty msg. Closing connection ...")
+			return
 
-			recdata = conn.recv(2048)
-			recdata = recdata.decode("ascii").split('|')
-			code = int(recdata[0])
+		recdata = recdata.decode("ascii").split('|')
+		code = int(recdata[0])
+
+		if code == 601:
+			print(f"Received From {addr}: 601 request.")
+			clientname = base64.b64decode(recdata[1])
+			clientrandom = base64.b64decode(recdata[2])
+			clientcertificatewithhash = base64.b64decode(recdata[3])
+			clientcertificatewithhash = clientcertificatewithhash.decode("ascii").split('|')
+			clientcertificate =  clientcertificatewithhash[0].encode("ascii")
+			signature = base64.b64decode(clientcertificatewithhash[-1])
+			try:
+				RSAcapubkey.verify(signature,clientcertificate,padding.PSS(mgf=padding.MGF1(algorithm=hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH),hashes.SHA256())
+			except InvalidSignature as e:
+				print(f"Invalid Signature From {addr}")
+				sys.exit(3)
+			print(f"Signature matched for {addr}")
+			certExpdate= clientcertificate[-10::1].decode("ascii")
+			today = date.today()
+			certExpdate = date(int(certExpdate[:4]),int(certExpdate[5:7]),int(certExpdate[8:]))
+			if (certExpdate-today).days < 0:
+				print(f"Certificate of {addr} expired.")
+				sys.exit(3)
+			print(f"Certificate of {addr} is valid.")
+
+			clientpubkey = ((clientcertificate.decode("ascii")).split("-----"))[1:4]	
+			clientpubkey = "-----"+"-----".join(clientpubkey)+"-----"		#MAKE IT GLOBAL
+			# print(clientpubkey)
+			certificatefile = open("Certificate.dat","rb")
+			certificate = certificatefile.read()
+			certificatefile.close()
+			serverrandom = os.urandom(32)
+			print(f"Generated serverrandom key for connection with {addr}")
+			datatosend = "602".encode("ascii") +"|".encode("ascii") + base64.b64encode(myname.encode("ascii")) + '|'.encode("ascii") + base64.b64encode(serverrandom) +"|".encode("ascii") + base64.b64encode(certificate)
+			print(f"Sent certificate to {addr}")
+			conn.send(datatosend)
+
+		recdata = conn.recv(2048)
+		if not recdata:
+			print(f"Received empty message from {addr}. Closing connection ...")
+			return
+
+		recdata = recdata.decode("ascii").split('|')
+		code = int(recdata[0])
+		
+		if code == 603:
+			print(f"Received From {addr}: 603 request.")
+			EncPreMasterKey =  base64.b64decode(recdata[1])
+			# requestedFilename = base64.b64decode(recdata[-1]) 
+			PreMasterKey = RSAmyprivkey.decrypt(EncPreMasterKey,padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()),algorithm=hashes.SHA256(),label=None))
+			print(f"Decrypted the PreMasterKey from {addr}")
+
+		# Generating all keys using PRF Function given in textbook.
+		secret_key = PRF_Fun(PreMasterKey,"master secret",clientrandom+serverrandom)[:48]
+		key_block = PRF_Fun(secret_key,"key expansion",clientrandom+serverrandom)
+		client_write_MAC_key = key_block[:32]
+		server_write_MAC_key = key_block[32:64]
+		client_write_key = key_block[64:88]
+		server_write_key = key_block[88:112]
+		client_write_IV = key_block[112:128]
+		server_write_IV = key_block[128:144]
+
+		while True:
 			
-			if code == 603:
-				print(f"From {addr}: Received 603 request.")
-				EncPreMasterKey =  base64.b64decode(recdata[1])
-				# requestedFilename = base64.b64decode(recdata[-1]) 
-				PreMasterKey = RSAmyprivkey.decrypt(EncPreMasterKey,padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()),algorithm=hashes.SHA256(),label=None))
-				print("Decrypted the PreMasterKey.")
-
-			# Generating all keys using PRF Function given in textbook.
-			secret_key = PRF_Fun(PreMasterKey,"master secret",clientrandom+serverrandom)[:48]
-			key_block = PRF_Fun(secret_key,"key expansion",clientrandom+serverrandom)
-			client_write_MAC_key = key_block[:32]
-			server_write_MAC_key = key_block[32:64]
-			client_write_key = key_block[64:88]
-			server_write_key = key_block[88:112]
-			client_write_IV = key_block[112:128]
-			server_write_IV = key_block[128:144]
-			print(key_block,len(key_block))
-
+			print(f"Waiting for file request from {addr} ...")
 			recdata = conn.recv(2048)
-			print(f"Received: {recdata}")
+
+			if not recdata:
+				print(f"Received empty msg from {addr}. Closing connection ...")
+				return
+
 			recdata = recdata.decode("ascii").split('|')
 			code = int(recdata[0])
 
 			if code == 605:
 				request = recdata[-1]
 				requested_file = request.split(" ")[1]
-				print(f"Received 605 request for {requested_file}")
+				print(f"Received 605 request from {addr} for {requested_file}")
 
 				file_found = False
 				# Find html file
@@ -226,12 +252,19 @@ def Server(myname, serverport):
 								chunk_mac = h_copy.finalize()
 								ct = aesccm.encrypt(nonce, chunk + chunk_mac, None)
 								tls_header = content_type + major_ver + minor_ver + frag_size
-								tls_record = base64.b64encode(tls_header + ct)
+								tls_record = tls_header + ct
+								print(f"Sent TLS-Record of size {len(tls_record)} to {addr}")
+								tls_record = base64.b64encode(tls_record)
 								conn.send(b"606|"+ tls_record)
+								time.sleep(0.5)
+					
 							else:
+								conn.send(b'606|')
+								print(f"Finished Sending File to {addr}")
 								break
 				
 				else:
+					print(f"File {requested_file} requested by {addr} not found.")
 					msg = b"Error: File Not Available"
 					frag_size = (len(msg)).to_bytes(2, byteorder='big')
 					h.update(msg)
@@ -258,3 +291,12 @@ def PRF_Fun(secret_key,label,seed1):
 
 if __name__ == "__main__":
 	start()
+	# t = threading.Thread(target=start)
+	# t.start()
+# 
+	# while True:
+		# print("Hello")
+		# user_input = input()
+		# print("Hello ", user_input)
+		# if user_input.lower() == "exit":
+			# sys.exit()

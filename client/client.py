@@ -77,7 +77,7 @@ def requestCertificate(myname,caport,caip):
 		recdata = (skt.recv(2048)).decode()
 		print(recdata)
 		skt.send(dataToCA)
-		print(f"To {(caip,caport)}:Sent 301 request.")
+		print(f"Sent To {(caip,caport)}:301 request.")
 		recdata = skt.recv(2048)
 		# print(recdata)
 		recdata = recdata.decode("ascii").split('|')
@@ -108,8 +108,7 @@ def Client(myname, serverip,serverport):
 	RSAcapubkey = serialization.load_pem_public_key(capubkeyfile.read())
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as skt:
 		skt.connect((serverip,serverport))
-		recdata = (skt.recv(2048)).decode()
-		print(f'From {(serverip,serverport)}: {recdata}')	# Hello message from Sender.
+		print(f'Connected to {(serverip,serverport)}')
 
 		certificatefile = open("Certificate.dat","rb")
 		certificate = certificatefile.read()
@@ -118,13 +117,13 @@ def Client(myname, serverip,serverport):
 		print("Generated clientrandom key.")
 		datatosend = "601".encode("ascii") +"|".encode("ascii") + base64.b64encode(myname.encode("ascii")) + '|'.encode("ascii") + base64.b64encode(clientrandom) + "|".encode("ascii") + base64.b64encode(certificate)
 		skt.send(datatosend)
-		print(f'To {(serverip,serverport)}: Sent 601 request.')
+		print(f'Sent To {(serverip,serverport)}: 601 request.')
 		recdata = skt.recv(2048)
 		# print("Received data: ",recdata)
 		recdata = recdata.decode("ascii").split('|')
 		code = int(recdata[0])
 		if code == 602:
-			print(f'From {(serverip,serverport)}: Received 602 information.')
+			print(f'Received From {(serverip,serverport)}: 602 response.')
 			servername = base64.b64decode(recdata[1])
 			serverrandom = base64.b64decode(recdata[2])
 			servercertificatewithhash = base64.b64decode(recdata[3])
@@ -154,9 +153,9 @@ def Client(myname, serverip,serverport):
 			print("Encrypted PreMasterSecret key with server's public key.")
 			datatosend = "603".encode("ascii") + '|'.encode("ascii") + base64.b64encode(EncPreMasterKey)
 			# print(datatosend)
-			print(f'Sent EncPreMasterSecret.')
+			print(f'Sending EncPreMasterSecret...')
 			skt.send(datatosend)
-			print(f'To {(serverip,serverport)}: Sent 603 request.')
+			print(f'Sent To {(serverip,serverport)}: 603 Message.')
 
 			# Generating all keys using PRF Function given in textbook.
 			secret_key = PRF_Fun(PreMasterKey,"master secret",clientrandom+serverrandom)[:48]
@@ -167,63 +166,87 @@ def Client(myname, serverip,serverport):
 			server_write_key = key_block[88:112]
 			client_write_IV = key_block[112:128]
 			server_write_IV = key_block[128:144]
-			print(key_block,len(key_block))
 
-			datatosend = b"605" + b'|' + b'GET ' + b'1.html'
+		while True:
+			file_name = input("Enter name of file to be requested from server:")
+			if file_name.lower() == 'exit':
+				sys.exit()
+
+			datatosend = b"605" + b'|' + b'GET ' + file_name.encode('ascii')
 			# print(datatosend)
-			print(f'Sent File Request')
+			print(f'Sending File Request ...')
 			skt.send(datatosend)
-			print(f'To {(serverip,serverport)}: Sent 605 request.')
+			print(f'Sent To {(serverip,serverport)}: 605 request.')
 			with open("recvd_file.txt", 'w') as f:
 				f.write('')
 
-		recdata = skt.recv(2048)
-		print("Received data: ",recdata)
-		recdata = recdata.decode("ascii").split('|')
-		code = int(recdata[0])
+			is_receiving = False
+			while True:
+				recdata = skt.recv(4096) # This matches exactly the amount of bytes sent by server. If they didnt, the next record arrives before the buffer is reset causing it to be concatenated with old one. Another work around is to add a pause before sending the next record each time on the server side.
 
-		if code == 606:
-			tls_record = base64.b64decode(recdata[1])
-			tls_header = tls_record[:5]
-			ct = tls_record[5:]
-			pt_length = int.from_bytes(tls_header[3:5], byteorder='big')
-			
-			aesccm = AESCCM(server_write_key)
-			nonce = b'0000000'				
+				if not recdata:
+					print("Stopped Receiving")
+					break
+				
+				recdata = recdata.decode("ascii").split('|')
+				# print("Received data: ",recdata)
+				code = int(recdata[0])
 
-			
-			data = aesccm.decrypt(nonce, ct, None)
-			msg = data[:pt_length]
-			msg_mac = data[pt_length:]
+				if is_receiving:
+					if code != 606:
+						print(f"Error: Expected 606, Received {code}")
 
-			h = hmac.HMAC(server_write_MAC_key, hashes.SHA256())
-			h.update(msg)
+				if code == 606:
+					if recdata[1] == '':
+						print("Finished Receiving File")
+						break
+					
+					tls_record = base64.b64decode(recdata[1])
+					print("Recived TLS-Record of size:", len(tls_record))
+					tls_header = tls_record[:5]
+					ct = tls_record[5:]
+					pt_length = int.from_bytes(tls_header[3:5], byteorder='big')
+					
 
-			h.verify(msg_mac)
-			with open("recvd_file.txt", 'a+') as f:
-				f.write(msg.decode("ascii"))
+					if not is_receiving:
+						aesccm = AESCCM(server_write_key)
+						is_receiving = True
+					
+					nonce = b'0000000'				
+					
+					data = aesccm.decrypt(nonce, ct, None)
+					msg = data[:pt_length]
+					msg_mac = data[pt_length:]
+
+					h = hmac.HMAC(server_write_MAC_key, hashes.SHA256())
+					h.update(msg)
+
+					h.verify(msg_mac)
+					with open("recvd_file.txt", 'a+') as f:
+						f.write(msg.decode("ascii"))
 
 
-		
-		if code == 608:
-			tls_record = base64.b64decode(recdata[1])
-			tls_header = tls_record[:5]
-			ct = tls_record[5:]
-			pt_length = int.from_bytes(tls_header[3:5], byteorder='big')
-			
-			aesccm = AESCCM(server_write_key)
-			nonce = os.urandom(13)
-			
-			data = aesccm.decrypt(nonce, ct, None)
-			pt = data[:pt_length]
-			pt_mac = data[pt_length:]
+				
+				if code == 608:
+					tls_record = base64.b64decode(recdata[1])
+					tls_header = tls_record[:5]
+					ct = tls_record[5:]
+					pt_length = int.from_bytes(tls_header[3:5], byteorder='big')
+					
+					aesccm = AESCCM(server_write_key)
+					nonce = b'0000000'				
+					
+					data = aesccm.decrypt(nonce, ct, None)
+					pt = data[:pt_length]
+					pt_mac = data[pt_length:]
 
-			h = hmac.HMAC(server_write_MAC_key, hashes.SHA256())
-			h.update(pt)
+					h = hmac.HMAC(server_write_MAC_key, hashes.SHA256())
+					h.update(pt)
 
-			h.verify(pt_mac)
+					h.verify(pt_mac)
 
-			print(pt)
+					print(pt.decode('ascii'))
+					break
 			
 # PRF_Fun as described in textbook. 			
 def PRF_Fun(secret_key,label,seed1):
