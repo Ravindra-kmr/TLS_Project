@@ -1,0 +1,57 @@
+Script started on 2022-03-27 21:27:34+05:30 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="84" LINES="16"]
+]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ python3 client.py -n myname -m R -d 0.0.0.0 -q 10000
+python3: can't open file 'client.py': [Errno 2] No such file or directory
+]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ python3 client.py -n myname -m R -d 0.0.0.0 -q 10000[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [13Pcd client/
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cpython3 client.py -n myname -m R -d 0.0.0.0 -q 10000[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [13Pcd client/
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cpython3 ca.py -p 50001 -o ca_outfilename[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [C[8Ping google.com
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cython3 ca.py -p 50001 -o ca_outfilename[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [13Pcd client/
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cpython3 client.py -n myname -m R -d 0.0.0.0 -q 10000[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[39P(reverse-i-search)`':[Cs': ping netaccess.iitm.ac.ine': sudo service-network manager restart[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1@r[C[C[C[C[C[C[C[C[1@v[C[C[C[C[C[C[C[C[C[8@failed reverse-i-search)`serve[C[C[C[C[C[C[C[C[1@r[C[C[C[C[C[C[C[C]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ sudo service-network manager restart[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [C[C[C[C[C[C[Cu[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cipconfigfconfigwatch ifconfig ping netaccess.iitm.ac.in[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [15Pifconfig
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cping netaccess.iitm.ac.in[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [C[C[C[C[C[8Pgoogle.com
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cython3 ca.py -p 50001 -o ca_outfilename[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [13Pcd client/
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cpython3 client.py -n myname -m R -d 0.0.0.0 -q 10000[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cpython3 client.py -n myname -m R -d 0.0.0.0 -q 10000[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [13Pcd client/
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cpython3 ca.py -p 50001 -o ca_outfilename[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [C[8Ping google.com
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cnetaccess.iitm.ac.in[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [15Pifconfig
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cping netaccess.iitm.ac.in[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [15Pifconfig
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cping netaccess.iitm.ac.in[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [C[C[C[C[C[8Pgoogle.com
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cython3 ca.py -p 50001 -o ca_outfilename[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [13Pcd client/
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cpython3 client.py -n myname -m R -d 0.0.0.0 -q 10000[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ [K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cpython3 server.py -n se rver -m S -q 10000
+**************************Acting as a Server**************************
+Listening ...
+Connected with: ('127.0.0.1', 47830)
+Connected to ('127.0.0.1', 47830)
+Received From ('127.0.0.1', 47830): 601 request.
+Signature matched for ('127.0.0.1', 47830)
+Certificate of ('127.0.0.1', 47830) is valid.
+Generated serverrandom key for connection with ('127.0.0.1', 47830)
+Sent certificate to ('127.0.0.1', 47830)
+Received From ('127.0.0.1', 47830): 603 request.
+Decrypted the PreMasterKey from ('127.0.0.1', 47830)
+Waiting for file request from ('127.0.0.1', 47830) ...
+Received 605 request from ('127.0.0.1', 47830) for 1.html
+Sent TLS-Record of size 2101 to ('127.0.0.1', 47830)
+Sent TLS-Record of size 2101 to ('127.0.0.1', 47830)
+Sent TLS-Record of size 2101 to ('127.0.0.1', 47830)
+Sent TLS-Record of size 2101 to ('127.0.0.1', 47830)
+Sent TLS-Record of size 1979 to ('127.0.0.1', 47830)
+Finished Sending File to ('127.0.0.1', 47830)
+Waiting for file request from ('127.0.0.1', 47830) ...
+Received empty msg from ('127.0.0.1', 47830). Closing connection ...
+^CTraceback (most recent call last):
+  File "server.py", line 293, in <module>
+    start()
+  File "server.py", line 58, in start
+    Server(myname,serverport)
+  File "server.py", line 129, in Server
+    conn, addr = skt.accept()
+  File "/usr/lib/python3.8/socket.py", line 292, in accept
+    fd, addr = self._accept()
+KeyboardInterrupt
+
+]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/server[00m$ exit
+exit
+
+Script done on 2022-03-27 21:29:42+05:30 [COMMAND_EXIT_CODE="130"]

@@ -1,0 +1,23 @@
+Script started on 2022-03-27 21:30:05+05:30 [TERM="xterm-256color" TTY="/dev/pts/1" COLUMNS="84" LINES="16"]
+]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/client[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/client[00m$ 
+]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/client[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/client[00m$ exitpython3 server.py -n server -m S -q 10000[A]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/client[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/client[00m$ [C[C[C[C[C[C[C[Cclient.py -n myn[11@ame -m R -d 0.0.0.0[C[C[C[C[C[C[C[C[C
+**************************Acting as a Client**************************
+Connected to ('0.0.0.0', 10000)
+Generated clientrandom key.
+Sent To ('0.0.0.0', 10000): 601 request.
+Received From ('0.0.0.0', 10000): 602 response.
+Signature matched.
+Server's Certificate valid.
+Generated session key.
+Encrypted PreMasterSecret key with server's public key.
+Sending EncPreMasterSecret...
+Sent To ('0.0.0.0', 10000): 603 Message.
+Enter name of file to be requested from server:k
+Sending File Request ...
+Sent To ('0.0.0.0', 10000): 605 request.
+Error: File Not Available
+Enter name of file to be requested from server:exit
+]0;jude@jude-Asus: ~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/client[01;32mjude@jude-Asus[00m:[01;34m~/Mtech/Sem_2/NS/Assigments/3/NS_Lab3/client[00m$ exit
+exit
+
+Script done on 2022-03-27 21:31:13+05:30 [COMMAND_EXIT_CODE="0"]
